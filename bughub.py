@@ -185,7 +185,10 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.WARNING - (10 * (args.verbose or 0)))
+    logging.basicConfig(
+        level=logging.WARNING - (10 * (args.verbose or 0)),
+        format="%(name)s - %(levelname)s - %(message)s",
+        )
 
     sources = [parse_source(sd) for sd in args.sources]
 
