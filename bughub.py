@@ -52,7 +52,6 @@ class Github(IssueSource):
         self.user = user
         self.repo = repo
         self.filters = filters
-        self.filters.setdefault("per_page", 100)
 
 
     def get_all(self):
@@ -74,12 +73,15 @@ class Github(IssueSource):
 
     def get_issues(self):
         """Yield github issues in GitHub API JSON format."""
+        filters = self.filters.copy()
+        filters.setdefault("per_page", 100)
+
         url = "{0}?{1}".format(
             urljoin(
                 self.API_BASE,
                 "/".join(["repos", self.user, self.repo, "issues"])
                 ),
-            urlencode(self.filters, doseq=True),
+            urlencode(filters, doseq=True),
             )
 
         while url:
@@ -111,8 +113,6 @@ class Bugzilla(IssueSource):
 
         """
         self.filters = filters
-        self.filters["include_fields"] = (
-            "id,assigned_to,status,summary,product,component,attachments")
 
 
     def get_all(self):
@@ -133,6 +133,10 @@ class Bugzilla(IssueSource):
 
     def get_issues(self):
         """Yield Bugzilla issues in Bugzilla REST API JSON format."""
+        filters = self.filters.copy()
+        filters["include_fields"] = (
+            "id,assigned_to,status,summary,product,component,attachments")
+
         url = "{0}?{1}".format(
             self.API_BASE,
             urlencode(self.filters, doseq=True)

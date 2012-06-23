@@ -24,3 +24,20 @@ CSV output will go to stdout.
 Use the `-v` or `--verbose` option to get debug logging to stderr.
 
 See the included ``basecamp.sh`` for sample usage.
+
+Requires Python 2.7.
+
+Developing
+----------
+
+To install the requirements for running the tests::
+
+    pip install -r requirements.txt
+
+To run the tests and measure coverage::
+
+    ./runtests.sh
+
+To view test coverage data::
+
+    firefox htmlcov/index.html

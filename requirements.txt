@@ -1,0 +1,7 @@
+# Development requirements only; bughub has no production dependencies
+
+cov-core==1.6
+coverage==3.5.2
+py==1.4.9
+pytest==2.2.4
+pytest-cov==1.6
