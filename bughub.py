@@ -33,7 +33,7 @@ log = logging.getLogger("bughub")
 class IssueSource(object):
     def get_all(self):
         """Yield all issues as standardized dictionaries."""
-        raise NotImplemented
+        raise NotImplemented # pragma: no cover
 
 
 
@@ -173,7 +173,7 @@ def parse_source(definition):
 
 
 
-if __name__ == "__main__":
+def main(output):
     parser = argparse.ArgumentParser(
         description="Pull bugs from github/bugzilla and dump to CSV.")
 
@@ -210,8 +210,14 @@ if __name__ == "__main__":
         ]
 
 
-    writer = csv.DictWriter(sys.stdout, fieldnames)
+    writer = csv.DictWriter(output, fieldnames)
     writer.writerow(dict(zip(fieldnames, fieldnames)))
 
     for issue in chain(*[source.get_all() for source in sources]):
         writer.writerow(issue)
+
+
+
+if __name__ == "__main__":
+    main(sys.stdout) # pragma: no cover
+
