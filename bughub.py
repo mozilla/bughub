@@ -52,6 +52,7 @@ class Github(IssueSource):
         self.user = user
         self.repo = repo
         self.filters = filters
+        self.filters.setdefault("per_page", 100)
 
 
     def get_all(self):
