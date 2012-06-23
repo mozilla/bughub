@@ -21,11 +21,11 @@ to the relevant API as querystring parameters.
 
 CSV output will go to stdout.
 
-Use the `-v` or `--verbose` option to get debug logging to stderr.
+Use the ``-v`` or ``--verbose`` option to get debug logging to stderr.
 
 See the included ``basecamp.sh`` for sample usage.
 
-Requires Python 2.7.
+Requires Python 2.7 (or Python 2.6 with the ``argparse`` package installed).
 
 Developing
 ----------
