@@ -26,9 +26,9 @@ def test_main(monkeypatch):
     output = stdout.read()
 
     assert output.replace("\r\n", "\n") == """source,id,url,assigned,status,title,product,module,patch
-github,123,https://github.com/user/repo/issues/123,,open,Fix the things,repo,repo,n
-github,123,https://github.com/user/repo/issues/123,,open,Fix the things,repo,repo,n
-bugzilla,123,https://bugzilla.mozilla.org/show_bug.cgi?id=123,foo,NEW,Fix the things,Core,Component,n
+github,123,https://github.com/user/repo/issues/123,nobody,open,Fix the things,repo,repo,n
+github,123,https://github.com/user/repo/issues/123,nobody,open,Fix the things,repo,repo,n
+bugzilla,123,https://bugzilla.mozilla.org/show_bug.cgi?id=123,foo,open,Fix the things,Core,Component,n
 """
 
 

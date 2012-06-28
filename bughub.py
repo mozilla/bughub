@@ -61,7 +61,7 @@ class Github(IssueSource):
                 "source": "github",
                 "id": issue["number"],
                 "url": issue["html_url"],
-                "assigned": issue["assignee"]["login"] if issue["assignee"] else "",
+                "assigned": issue["assignee"]["login"] if issue["assignee"] else "nobody",
                 "status": issue["state"],
                 "title": issue["title"],
                 "product": self.repo,
@@ -103,6 +103,8 @@ class Bugzilla(IssueSource):
     API_BASE = "https://api-dev.bugzilla.mozilla.org/latest/bug"
     BUG_URL_FORMAT = "https://bugzilla.mozilla.org/show_bug.cgi?id={0}"
 
+    CLOSED_STATES = set(["RESOLVED", "VERIFIED", "CLOSED"])
+
 
     def __init__(self, **filters):
         """
@@ -123,7 +125,7 @@ class Bugzilla(IssueSource):
                 "id": issue["id"],
                 "url": self.BUG_URL_FORMAT.format(issue["id"]),
                 "assigned": issue["assigned_to"]["name"],
-                "status": issue["status"],
+                "status": "closed" if issue["status"] in self.CLOSED_STATES else "open",
                 "title": issue["summary"],
                 "product": issue["product"],
                 "module": issue["component"],
