@@ -216,7 +216,12 @@ def main(output):
     writer.writerow(dict(zip(fieldnames, fieldnames)))
 
     for issue in chain(*[source.get_all() for source in sources]):
-        writer.writerow(issue)
+        writer.writerow(
+            dict(
+                (k, v.encode("utf8") if hasattr(v, "encode") else v)
+                for k, v in issue.items()
+                )
+            )
 
 
 
