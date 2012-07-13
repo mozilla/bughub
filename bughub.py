@@ -94,7 +94,7 @@ class Github(IssueSource):
             #       <https://.../issues?page=13&state=open>; rel="last"
             url = dict(
                 reversed([s.strip() for s in l.strip().split(";")])
-                for l in response.headers["Link"].split(",")
+                for l in response.headers.get("Link", ";").split(",")
                 ).get('rel="next"', "").strip("<>")
 
 
