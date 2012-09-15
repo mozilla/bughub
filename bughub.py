@@ -12,7 +12,7 @@ title
 product
 module
 patch ("y" if there is an attachment / pull request, else "n")
-
+feature ("y" if it is a feature, else "n")
 
 """
 import argparse
@@ -66,7 +66,8 @@ class Github(IssueSource):
                 "title": issue["title"],
                 "product": self.repo,
                 "module": self.repo,
-                "patch": "y" if issue["pull_request"]["html_url"] else "n"
+                "patch": "y" if issue["pull_request"]["html_url"] else "n",
+                "feature": self.is_enhancement((i["name"] == "Enhancement" for i in issue["labels"]))
                 }
 
 
@@ -97,7 +98,20 @@ class Github(IssueSource):
                 for l in response.headers.get("Link", ";").split(",")
                 ).get('rel="next"', "").strip("<>")
 
-
+    def is_enhancement(self, iter):
+        try:
+            result = iter.next()
+            while not result:
+                result = iter.next()
+            if result:
+                return "y"
+            else:
+                return "n"
+        except StopIteration:
+            # We will get this if there are no values to iterate over, i.e. the
+            # label field is empty, then we return "n" becuase it's not an
+            # Enhancement.
+            return "n"
 
 class Bugzilla(IssueSource):
     API_BASE = "https://api-dev.bugzilla.mozilla.org/latest/bug"
@@ -129,7 +143,8 @@ class Bugzilla(IssueSource):
                 "title": issue["summary"],
                 "product": issue["product"],
                 "module": issue["component"],
-                "patch": "y" if "attachments" in issue else "n"
+                "patch": "y" if "attachments" in issue else "n",
+                "feature": "y" if "feature" in issue["keywords"] else "n"
                 }
 
 
@@ -137,7 +152,7 @@ class Bugzilla(IssueSource):
         """Yield Bugzilla issues in Bugzilla REST API JSON format."""
         filters = self.filters.copy()
         filters["include_fields"] = (
-            "id,assigned_to,status,summary,product,component,attachments")
+            "id,assigned_to,status,summary,product,component,attachments,keywords")
 
         url = "{0}?{1}".format(
             self.API_BASE,
@@ -209,6 +224,7 @@ def main(output):
         "product",
         "module",
         "patch",
+        "feature",
         ]
 
 

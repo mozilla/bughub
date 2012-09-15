@@ -25,12 +25,22 @@ def test_main(monkeypatch):
     stdout.seek(0)
     output = stdout.read()
 
-    assert output.replace("\r\n", "\n") == """source,id,url,assigned,status,title,product,module,patch
-github,123,https://github.com/user/repo/issues/123,nobody,open,Fix the things,repo,repo,n
-github,123,https://github.com/user/repo/issues/123,nobody,open,Fix the things,repo,repo,n
-bugzilla,123,https://bugzilla.mozilla.org/show_bug.cgi?id=123,foo,open,Fix the things,Core,Component,n
+    output = output.replace("\r\n", "\n")
+    expected = """source,id,url,assigned,status,title,product,module,patch,feature
+github,123,https://github.com/user/repo/issues/123,nobody,open,Fix the things,repo,repo,n,n
+github,124,https://github.com/user/repo/issues/124,nobody,open,Fix the things,repo,repo,n,y
+github,125,https://github.com/user/repo/issues/125,nobody,open,Fix the things,repo,repo,n,n
+github,123,https://github.com/user/repo/issues/123,nobody,open,Fix the things,repo,repo,n,n
+github,124,https://github.com/user/repo/issues/124,nobody,open,Fix the things,repo,repo,n,y
+github,125,https://github.com/user/repo/issues/125,nobody,open,Fix the things,repo,repo,n,n
+bugzilla,123,https://bugzilla.mozilla.org/show_bug.cgi?id=123,foo,open,Fix the things,Core,Component,n,n
+bugzilla,124,https://bugzilla.mozilla.org/show_bug.cgi?id=124,foo,open,Fix the things,Core,Component,n,y
+bugzilla,125,https://bugzilla.mozilla.org/show_bug.cgi?id=125,foo,open,Fix the things,Core,Component,n,n
 """
-
+    # Uncomment these lines for debugging
+    #print "output: %s" % output
+    #print "expected: %s" % expected
+    assert output == expected
 
 def test_parse_source_github():
     s = bughub.parse_source("github:user:repo:foo=bar:foo=baz")
@@ -59,12 +69,13 @@ class FakeResponse(object):
 
 
 def fake_github_issue(**kwargs):
-    defaults = {
+    defaults ={
         "number": 123,
         "assignee": None,
         "state": "open",
         "title": "Fix the things",
         "pull_request": {"html_url": None},
+        "labels": []
         }
     defaults.update(kwargs)
 
@@ -85,6 +96,7 @@ def fake_bugzilla_issue(**kwargs):
         "summary": "Fix the things",
         "product": "Core",
         "component": "Component",
+        "keywords": ""
         }
     defaults.update(kwargs)
 
@@ -92,8 +104,16 @@ def fake_bugzilla_issue(**kwargs):
 
 
 def fake_urlopen(url):
+    githubissues = [fake_github_issue(),
+                    fake_github_issue(number=124,labels=[{"name":"foo","color":"red"},{"name":"Enhancement","color": "black"}]),
+                    fake_github_issue(number=125,labels=[{"name":"foo","color":"blue"}])]
+
+    bugzillaissues = [fake_bugzilla_issue(),
+                      fake_bugzilla_issue(id=124, keywords=["foo","feature"]),
+                      fake_bugzilla_issue(id=125, keywords=["foo"])]
+
     if "github" in url:
-        body = json.dumps([fake_github_issue()])
+        body = json.dumps(githubissues)
         if "page=2" in url:
             headers = {
                 "Link": 'Link: <https://github.com/user/repo/issues?page=1>; rel="first"'
@@ -104,6 +124,6 @@ def fake_urlopen(url):
                 }
         return FakeResponse(body, headers)
     elif "bugzilla" in url:
-        return FakeResponse(json.dumps({"bugs": [fake_bugzilla_issue()]}), {})
+        return FakeResponse(json.dumps({"bugs": bugzillaissues}), {})
     else:
         raise NotImplementedError
