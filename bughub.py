@@ -67,7 +67,7 @@ class Github(IssueSource):
                 "product": self.repo,
                 "module": self.repo,
                 "patch": "y" if issue["pull_request"]["html_url"] else "n",
-                "feature": self.is_enhancement((i["name"] == "task" for i in issue["labels"]))
+                "feature": self.is_enhancement((i["name"] == "feature" for i in issue["labels"]))
                 }
 
 

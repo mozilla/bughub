@@ -105,7 +105,7 @@ def fake_bugzilla_issue(**kwargs):
 
 def fake_urlopen(url):
     githubissues = [fake_github_issue(),
-                    fake_github_issue(number=124,labels=[{"name":"foo","color":"red"},{"name":"task","color": "black"}]),
+                    fake_github_issue(number=124,labels=[{"name":"foo","color":"red"},{"name":"feature","color": "black"}]),
                     fake_github_issue(number=125,labels=[{"name":"foo","color":"blue"}])]
 
     bugzillaissues = [fake_bugzilla_issue(),
